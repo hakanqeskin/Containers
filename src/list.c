@@ -22,22 +22,18 @@ struct ListIterator{
 };
 
 struct List{
+	size_t itemSize;
+	size_t count;
+	FDestructor destructor;
+
 	struct ListIterator first;
 	struct ListIterator* last;
-	FConstructor constructor;
-	FDestructor destructor;
-	size_t count;
-	size_t itemSize;
 };
 
 static struct ListIterator* list_createIt(list_t self, const void* data)
 {
 	struct ListIterator* it = malloc(sizeof(struct ListIterator) + self->itemSize);
 	if( it ){
-		if( self->constructor ){
-			self->constructor(it->data);
-		}
-
 		memcpy(it->data, data, self->itemSize);
 	}
 
@@ -86,8 +82,7 @@ static void list_deleteItems(list_t self)
 	}while( it );
 }
 
-list_t list_create(size_t itemSize,
-		FConstructor constructor, FDestructor destructor)
+list_t list_create(size_t itemSize, FDestructor destructor)
 {
 	if( !itemSize ){
 		errno = EINVAL;
@@ -98,7 +93,6 @@ list_t list_create(size_t itemSize,
 	if(self){
 		list_reset(self);
 		self->itemSize = itemSize;
-		self->constructor = constructor;
 		self->destructor = destructor;
 	}
 

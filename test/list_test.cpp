@@ -72,7 +72,7 @@ static void print_List(list_t L)
 	ListIterator* it = list_first(L);
 	while( it ){
 		pts = (TestStruct*)listIt_data(it);
-		std::cout<<*pts<<"\n";
+		std::cout<<pts->str<<"\n";
 		it = listIt_next(it);
 	}
 	std::cout<<"********LIST-END*****************\n";
@@ -91,15 +91,11 @@ static void initContainers(std::list<TestStruct>& C, list_t L)
 {
 	TestStruct ts;
 	for(unsigned I = 0; I < TEST_CONTAINER_SIZE; ++I){
-		ts.i_value = I;
-		ts.f_value = I * 3.0 / 2;
+		ts_init(&ts, I , I * 3.0 / 2);
 
 		C.push_back(ts);
 		list_add(L, &ts);
 	}
-
-	//print_List(L);
-	//print_STLContainer(C);
 }
 
 static bool compareContent(const std::list<TestStruct>& C, const list_t L)
@@ -141,8 +137,7 @@ static bool list101()
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::list<TestStruct> C;
-	list_t L = list_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	list_t L = list_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, L);
 
@@ -158,15 +153,13 @@ static bool list101()
 
 static void insertDataEvenIndex(std::list<TestStruct>& C, list_t L)
 {
-	TestStruct ts;
-	ts.i_value = TEST_CONTAINER_SIZE;
-	ts.f_value = ts.i_value * 3.0 / 2;
-
 	typedef std::list<TestStruct>::iterator TTestStruct;
 	TTestStruct cit = C.begin();
 	ListIterator* it = list_first(L);
 
+	TestStruct ts;
 	for(std::size_t I = 0; I < TEST_CONTAINER_SIZE; ++I){
+		ts_init(&ts, TEST_CONTAINER_SIZE, TEST_CONTAINER_SIZE * 3.0 / 2);
 		cit = C.insert(cit, ts);
 		++cit;
 		++cit;
@@ -178,15 +171,13 @@ static void insertDataEvenIndex(std::list<TestStruct>& C, list_t L)
 
 static void insertDataOddIndex(std::list<TestStruct>& C, list_t L)
 {
-	TestStruct ts;
-	ts.i_value = TEST_CONTAINER_SIZE;
-	ts.f_value = ts.i_value * 3.0 / 2;
-
 	typedef std::list<TestStruct>::iterator TTestStruct;
 	TTestStruct cit = C.begin();
 	ListIterator* it = list_first(L);
 
+	TestStruct ts;
 	for(std::size_t I = 0; I < TEST_CONTAINER_SIZE; ++I){
+		ts_init(&ts, TEST_CONTAINER_SIZE, TEST_CONTAINER_SIZE * 3.0 / 2);
 		cit = C.insert(++cit, ts);
 		++cit;
 
@@ -200,9 +191,7 @@ static bool list102()
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::list<TestStruct> C;
-	list_t L = list_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
-
+	list_t L = list_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, L);
 	insertDataEvenIndex(C, L);
@@ -232,8 +221,7 @@ static bool list103()
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::list<TestStruct> C;
-	list_t L = list_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	list_t L = list_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, L);
 	insertDataEvenIndex(C, L);
@@ -328,8 +316,7 @@ static bool list104()
 
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::list<TestStruct> C;
-	list_t L = list_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	list_t L = list_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, L);
 	insertDataEvenIndex(C, L);

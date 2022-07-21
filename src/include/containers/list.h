@@ -33,7 +33,7 @@ struct ListIterator* listIt_next(struct ListIterator*);
 
 typedef struct List* list_t;
 
-list_t list_create(size_t itemSize, FConstructor, FDestructor);
+list_t list_create(size_t itemSize, FDestructor);
 void list_delete(list_t);
 
 void list_clear(list_t);

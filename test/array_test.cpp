@@ -6,7 +6,7 @@
 
 #include <vector>
 #include <algorithm>
-
+#include <stack>
 
 static bool array101(void);
 static bool array102(void);
@@ -66,7 +66,7 @@ static void print_Array(const array_t A)
 	size_t count = array_size(A);
 	for(size_t I = 0; I < count; ++I){
 		pts = (TestStruct*)array_at(A, I);
-		std::cout<<*pts<<"\n";
+		std::cout << pts->str <<"\n";
 	}
 	std::cout<<"********ARRAY-END*****************\n";
 }
@@ -84,15 +84,11 @@ static void initContainers(std::vector<TestStruct>& C, array_t A)
 {
 	TestStruct ts;
 	for(unsigned I = 0; I < TEST_CONTAINER_SIZE; ++I){
-		ts.i_value = I;
-		ts.f_value = I * 3.0 / 2;
+		ts_init(&ts, I , I * 3.0 / 2);
 
 		C.push_back(ts);
 		array_add(A, &ts);
 	}
-
-	//print_STLContainer(V);
-	//print_Array(A);
 }
 
 static bool compareContent(const std::vector<TestStruct>& C, const array_t A)
@@ -129,8 +125,7 @@ static bool array101(void)
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::vector<TestStruct> C;
-	array_t A = array_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	array_t A = array_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, A);
 
@@ -147,15 +142,13 @@ static bool array101(void)
 
 static void insertDataEvenIndex(std::vector<TestStruct>& C, array_t A)
 {
-	TestStruct ts;
-	ts.i_value = TEST_CONTAINER_SIZE;
-	ts.f_value = ts.i_value * 3.0 / 2;
-
 	typedef std::vector<TestStruct>::iterator TTestStruct;
 	TTestStruct it = C.begin();
 	size_t index = 0;
 
+	TestStruct ts;
 	for(std::size_t I = 0; I < TEST_CONTAINER_SIZE; ++I){
+		ts_init(&ts, TEST_CONTAINER_SIZE, TEST_CONTAINER_SIZE * 3.0 / 2);
 		it = C.insert(it, ts);
 		it += 2;
 		index = array_insert(A, index, &ts);
@@ -165,15 +158,13 @@ static void insertDataEvenIndex(std::vector<TestStruct>& C, array_t A)
 
 static void insertDataOddIndex(std::vector<TestStruct>& C, array_t A)
 {
-	TestStruct ts;
-	ts.i_value = TEST_CONTAINER_SIZE;
-	ts.f_value = ts.i_value * 3.0 / 2;
-
 	typedef std::vector<TestStruct>::iterator TTestStruct;
 	TTestStruct it = C.begin();
 	size_t index = 0;
 
+	TestStruct ts;
 	for(std::size_t I = 0; I < TEST_CONTAINER_SIZE; ++I){
+		ts_init(&ts, TEST_CONTAINER_SIZE, TEST_CONTAINER_SIZE * 3.0 / 2);
 		it = C.insert(++it, ts);
 		++it;
 		index = array_insert(A, ++index, &ts);
@@ -185,8 +176,7 @@ static bool array102(void)
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::vector<TestStruct> C;
-	array_t A = array_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	array_t A = array_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, A);
 	insertDataEvenIndex(C, A);
@@ -216,8 +206,7 @@ static bool array103(void)
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::vector<TestStruct> C;
-	array_t A = array_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	array_t A = array_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, A);
 	insertDataEvenIndex(C, A);
@@ -295,8 +284,7 @@ static bool array104(void)
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::vector<TestStruct> C;
-	array_t A = array_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	array_t A = array_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, A);
 	insertDataEvenIndex(C, A);

@@ -20,7 +20,9 @@ struct TestStruct
 {
 	int i_value;
 	float f_value;
+	char* str;
 
+//Some usefull operations
     bool operator==(const TestStruct& t)const
     {
     	return this->i_value == t.i_value && this->f_value == t.f_value;
@@ -50,8 +52,8 @@ struct TestStruct
 	}
 };
 
-void create_TestStruct(void*);
-void delete_TestStruct(void*);
+void ts_init(struct TestStruct*, int, float);
+void ts_release(struct TestStruct*);
 
 enum ECompare compare_TestStruct(const TestStruct*, const TestStruct*);
 

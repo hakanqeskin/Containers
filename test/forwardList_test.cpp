@@ -76,7 +76,7 @@ static void print_FList(const flist_t L)
 	struct Iterator* it = flist_first(L);
 	while( it ){
 		pts = (TestStruct*)flistIt_data(it);
-		std::cout<<*pts<<"\n";
+		std::cout<<pts->str<<"\n";
 		it = flistIt_next(it);
 	}
 	std::cout<<"*********FLIST-END****************\n";
@@ -95,8 +95,7 @@ static void initContainers(std::forward_list<TestStruct>& C, flist_t L)
 {
 	TestStruct ts;
 	for(unsigned I = 0; I < TEST_CONTAINER_SIZE; ++I){
-		ts.i_value = I;
-		ts.f_value = I * 3.0 / 2;
+		ts_init(&ts, I , I * 3.0 / 2);
 
 		C.push_front(ts);
 		flist_add(L, &ts);
@@ -143,8 +142,7 @@ static bool forwardList101(void)
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::forward_list<TestStruct> C;
-	flist_t L = flist_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	flist_t L = flist_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, L);
 
@@ -162,8 +160,7 @@ static bool forwardList101(void)
 static void insertDataEvenIndex(std::forward_list<TestStruct>& C, flist_t L)
 {
 	TestStruct ts;
-	ts.i_value = TEST_CONTAINER_SIZE;
-	ts.f_value = ts.i_value * 3.0 / 2;
+	ts_init(&ts, TEST_CONTAINER_SIZE, TEST_CONTAINER_SIZE * 3.0 / 2);
 
 	C.push_front(ts);
 	++m_size;
@@ -173,6 +170,7 @@ static void insertDataEvenIndex(std::forward_list<TestStruct>& C, flist_t L)
 	struct Iterator* it = flist_add(L, &ts);
 
 	for(std::size_t I = 0; I < TEST_CONTAINER_SIZE; ++I){
+		ts_init(&ts, TEST_CONTAINER_SIZE, TEST_CONTAINER_SIZE * 3.0 / 2);
 		cit = C.insert_after(++cit, ts);
 		it = flistIt_next(it);
 		it = flist_insert(L, it, &ts);
@@ -183,15 +181,14 @@ static void insertDataEvenIndex(std::forward_list<TestStruct>& C, flist_t L)
 
 static void insertDataOddIndex(std::forward_list<TestStruct>& C, flist_t L)
 {
-	TestStruct ts;
-	ts.i_value = TEST_CONTAINER_SIZE;
-	ts.f_value = ts.i_value * 3.0 / 2;
-
 	typedef std::forward_list<TestStruct>::iterator TTestStruct;
 
 	TTestStruct cit = C.begin();
 	struct Iterator* it = flist_first(L);
+
+	TestStruct ts;
 	for(std::size_t I = 0; I < TEST_CONTAINER_SIZE; ++I){
+		ts_init(&ts, TEST_CONTAINER_SIZE, TEST_CONTAINER_SIZE * 3.0 / 2);
 		cit = C.insert_after(cit, ts);
 		it = flist_insert(L, it, &ts);
 		++cit;
@@ -204,8 +201,7 @@ static bool forwardList102(void)
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::forward_list<TestStruct> C;
-	flist_t L = flist_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	flist_t L = flist_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, L);
 	insertDataEvenIndex(C, L);
@@ -236,8 +232,7 @@ static bool forwardList103(void)
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::forward_list<TestStruct> C;
-	flist_t L = flist_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	flist_t L = flist_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, L);
 	insertDataEvenIndex(C, L);
@@ -328,8 +323,7 @@ static bool forwardList104(void)
 {
 	std::cout<<"BEGIN "<<__func__<<std::endl;
 	std::forward_list<TestStruct> C;
-	flist_t L = flist_create(sizeof(TestStruct),
-			create_TestStruct, delete_TestStruct);
+	flist_t L = flist_create(sizeof(TestStruct), (FDestructor)ts_release);
 
 	initContainers(C, L);
 	insertDataEvenIndex(C, L);

@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-typedef void (*FConstructor)(void*);
+/*typedef void (*FConstructor)(void*);*/
 typedef void (*FDestructor)(void*);
 
 enum ECompare{

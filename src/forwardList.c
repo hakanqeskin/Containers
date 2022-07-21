@@ -19,21 +19,17 @@ struct Iterator{
 };
 
 struct ForwardList{
-	struct Iterator first;
-	FConstructor constructor;
-	FDestructor destructor;
 	size_t itemSize;
 	size_t count;
+	FDestructor destructor;
+
+	struct Iterator first;
 };
 
 static struct Iterator* flist_createIt(flist_t self, const void* data)
 {
 	struct Iterator* it = malloc(sizeof(struct Iterator) + self->itemSize);
 	if( it ){
-		if( self->constructor ){
-			self->constructor(it->data);
-		}
-
 		memcpy(it->data, data, self->itemSize);
 	}
 
@@ -79,8 +75,7 @@ static void flist_deleteItems(flist_t self)
 	}
 }
 
-flist_t flist_create(size_t itemSize,
-		FConstructor constructor, FDestructor destructor)
+flist_t flist_create(size_t itemSize, FDestructor destructor)
 {
 	if( !itemSize ){
 		errno = EINVAL;
@@ -90,7 +85,6 @@ flist_t flist_create(size_t itemSize,
 	flist_t self = malloc(sizeof(struct ForwardList));
 	if(self){
 		flist_reset(self);
-		self->constructor = constructor;
 		self->destructor = destructor;
 		self->itemSize = itemSize;
 	}

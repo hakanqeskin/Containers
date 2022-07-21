@@ -33,7 +33,7 @@ struct Iterator* flistIt_next(struct Iterator*);
 
 typedef struct ForwardList* flist_t;
 
-flist_t flist_create(size_t itemSize, FConstructor, FDestructor);
+flist_t flist_create(size_t itemSize, FDestructor);
 void flist_delete(flist_t);
 
 void flist_clear(flist_t);

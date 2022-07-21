@@ -18,7 +18,7 @@ extern "C" {
 
 typedef struct Array* array_t;
 
-array_t array_create(size_t itemSize, FConstructor, FDestructor);
+array_t array_create(size_t itemSize, FDestructor);
 void array_delete(array_t);
 
 void array_clear(array_t);

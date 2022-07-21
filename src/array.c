@@ -14,10 +14,10 @@
 #include <assert.h>
 
 struct Array{
-	FConstructor constructor;
-	FDestructor destructor;
 	size_t itemSize;
 	size_t count;
+	FDestructor destructor;
+
 	size_t capacity;
 	void *data;
 };
@@ -45,13 +45,11 @@ static int array_checkCapacity(array_t self)
 	return result;
 }
 
-array_t array_create(size_t itemSize,
-		FConstructor constructor, FDestructor destructor)
+array_t array_create(size_t itemSize, FDestructor destructor)
 {
 	array_t self;
 	if( itemSize ){
 		if( (self = malloc(sizeof(struct Array))) != NULL ){
-			self->constructor = constructor;
 			self->destructor = destructor;
 			self->itemSize = itemSize;
 			self->count = 0;
@@ -108,13 +106,6 @@ void array_resize(array_t self, size_t count)
 				return;
 			}
 		}
-
-		if( self->constructor ){
-			size_t I;
-			for(I = self->count; I < count; ++I){
-				self->constructor(self->data + I * self->itemSize);
-			}
-		}
 	}
 	else if( count < self->count){
 		if( self->destructor ){
@@ -164,11 +155,7 @@ size_t array_add(array_t self, const void* data)
 	}
 
 	void* dest = self->data + self->itemSize * self->count;
-	if( self->constructor ){
-		self->constructor(dest);
-	}
 	memcpy(dest, data, self->itemSize);
-
 	return ++self->count;
 }
 
@@ -188,10 +175,6 @@ size_t array_insert(array_t self, size_t index, const void* data)
 
 	memmove(dest + self->itemSize, dest,
 			(self->count - index) * self->itemSize);
-
-	if( self->constructor ){
-		self->constructor(dest);
-	}
 
 	memcpy(dest, data, self->itemSize);
 	++self->count;
