@@ -1,5 +1,42 @@
 #include "container_test.h"
 
+#ifdef _MSC_VER
+#include <cstdarg>
+
+int asprintf(char** strp, const char* fmt, ...)
+{
+	if (!strp) {
+		return -1;
+	}
+
+	// Determine required size
+	va_list ap;
+	va_start(ap, fmt);
+	int size = vsnprintf(NULL, 0, fmt, ap);
+	va_end(ap);
+
+	if (size < 0) {
+		return -1;
+	}
+
+	//for null terminated
+	*strp = (char*)malloc(++size);
+	if (!*strp) {
+		return -1;
+	}
+
+	va_start(ap, fmt);
+	size = vsnprintf(*strp, size, fmt, ap);
+	va_end(ap);
+
+	if (size < 0) {
+		free(*strp);
+	}
+
+	return size;
+}
+#endif
+
 void ts_init(struct TestStruct* ts, int iv, float fv)
 {
 	if( ts ){

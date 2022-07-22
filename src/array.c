@@ -19,7 +19,7 @@ struct Array{
 	FDestructor destructor;
 
 	size_t capacity;
-	void *data;
+	unsigned char *data;
 };
 
 static int array_setCapacity(array_t self, size_t capacity)
@@ -171,7 +171,7 @@ size_t array_insert(array_t self, size_t index, const void* data)
 		return INVALID_ARRAY_INDEX;
 	}
 
-	void* dest = self->data + (self->itemSize * index);
+	unsigned char* dest = self->data + (self->itemSize * index);
 
 	memmove(dest + self->itemSize, dest,
 			(self->count - index) * self->itemSize);
@@ -187,7 +187,7 @@ void array_erase(array_t self, size_t index)
 	if( index < self->count ){
 		--self->count;
 
-		void* dest = self->data + self->itemSize * index;
+		unsigned char* dest = self->data + self->itemSize * index;
 		if( self->destructor ){
 			self->destructor(dest);
 		}

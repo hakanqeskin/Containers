@@ -14,6 +14,7 @@
 
 #include <assert.h>
 
+#define Last(L)					L->first.prev
 
 struct ListIterator{
 	struct ListIterator* next;
@@ -27,7 +28,6 @@ struct List{
 	FDestructor destructor;
 
 	struct ListIterator first;
-	struct ListIterator* last;
 };
 
 static struct ListIterator* list_createIt(list_t self, const void* data)
@@ -66,8 +66,7 @@ struct ListIterator* listIt_next(struct ListIterator* it)
 static void list_reset(list_t self)
 {
 	self->first.next = NULL;
-	self->first.prev = NULL;
-	self->last = &self->first;
+	Last(self) = &self->first;
 	self->count = 0;
 }
 
@@ -118,12 +117,14 @@ void list_clear(list_t self)
 
 size_t list_size(const list_t self)
 {
-	return self ? self->count : 0;
+	assert(self);
+	return self->count;
 }
 
 struct ListIterator* list_first(const list_t self)
 {
-	return self ? self->first.next : NULL;
+	assert(self);
+	return self->first.next;
 }
 
 struct ListIterator* list_add(list_t self, const void* data)
@@ -131,10 +132,10 @@ struct ListIterator* list_add(list_t self, const void* data)
 	assert(self && data);
 	struct ListIterator* it = list_createIt(self, data);
 	if( it ){
-		it->prev = self->last;
+		it->prev = Last(self);
 
-		self->last->next = it;
-		self->last = it;
+		Last(self)->next = it;
+		Last(self) = it;
 		++self->count;
 	}
 
@@ -173,7 +174,7 @@ struct ListIterator* list_erase(list_t self, struct ListIterator* it)
 		next->prev = it->prev;
 	}
 	else{
-		self->last = it->prev;
+		Last(self) = it->prev;
 	}
 
 	/*it->prev->next = it->next;
